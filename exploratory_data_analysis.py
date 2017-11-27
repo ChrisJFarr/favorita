@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import pickle
 
 train = pd.read_csv("data/train.csv")
 # ['id', 'date', 'store_nbr', 'item_nbr', 'unit_sales', 'onpromotion']
@@ -8,12 +9,21 @@ train = pd.read_csv("data/train.csv")
 # todo select 5 stores as a subset of train
 store_list = np.unique(train.store_nbr)
 train = train.loc[[nbr in store_list[0:5] for nbr in train.store_nbr], :].copy()
+train.loc[:, "date"] = pd.to_datetime(train.date)
+
+# Dumping into pickle, might be a bit faster on upload
+file_name = "data/train.pkl"
+pickle.dump(train, open(file_name, "wb"))
 
 # EDA Questions for Train set
 # todo how do item numbers span across stores?
 # todo what are the date ranges? do they vary by store?
 # todo how has volume of unit_sales correlated with time?
 # todo is the time correlation different by store?
+# todo what are the timeframes in train compared to test?
+# train: 2013/01/02-2017/08/15 (4 years)
+# test: 2017/08/16-2017/08/31 (2 wks and 1 day, wed-..-thurs)
+# lag variables must be at least 15 days prior
 # todo how many items are onpromotion?
 # todo how does onpromotion affect a single item_nbr?
 # todo how does the volume of the stores compare?
@@ -37,6 +47,7 @@ holidays_events.head()
 # todo how do holidays affect volume?
 # todo which stores do certain regional holidays affect?
 # todo compare locale_name to city and state of stores in the stores.csv for joining holidays
+# todo what holidays occur (if any) during the test period (2017/08/16-2017/08/31)?
 
 # stores.csv
 stores = pd.read_csv("data/stores.csv")
@@ -62,7 +73,7 @@ items.head()
 oil = pd.read_csv("data/oil.csv")
 oil.head()
 # ['date', 'dcoilwtico']
-# todo wtf
+# todo daily oil price
 
 # transactions.csv
 transactions = pd.read_csv("data/transactions.csv")
